@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @layer base {
+    :root {
+      --font-geist-mono: "Geist Mono", monospace;
+      --font-geist-sans: "Geist Sans", sans-serif;
+      --background: 188 66% 100%;
+      --foreground: 188 76% 2%;
+      --muted: 188 29% 95%;
+      --muted-foreground: 188 0% 28%;
+      --popover: 0 0% 99%;
+      --popover-foreground: 188 76% 1%;
+      --card: 0 0% 99%;
+      --card-foreground: 188 76% 1%;
+      --border: 220 13% 91%;
+      --input: 220 13% 91%;
+      --primary: 188 44% 36%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 188 12% 82%;
+      --secondary-foreground: 188 12% 22%;
+      --accent: 188 18% 73%;
+      --accent-foreground: 188 18% 13%;
+      --destructive: 12 87% 39%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 188 44% 36%;
+      --radius: 0.5rem;
+    }
+
+    
+
+    .dark {
+      --font-geist-mono: "Geist Mono", monospace;
+      --font-geist-sans: "Geist Sans", sans-serif;
+      --background: 188 30% 0%;
+      --foreground: 188 33% 100%;
+      --muted: 188 29% 5%;
+      --muted-foreground: 188 0% 72%;
+      --popover: 0 0% 1%;
+      --popover-foreground: 0 0% 100%;
+      --card: 0 0% 1%;
+      --card-foreground: 0 0% 100%;
+      --border: 215 27.9% 16.9%;
+      --input: 215 27.9% 16.9%;
+      --primary: 188 44% 36%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 188 8% 8%;
+      --secondary-foreground: 188 8% 68%;
+      --accent: 188 14% 16%;
+      --accent-foreground: 188 14% 76%;
+      --destructive: 12 87% 57%;
+      --destructive-foreground: 0 0% 0%;
+      --ring: 188 44% 36%;
+    }
+  }
+  :root {
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

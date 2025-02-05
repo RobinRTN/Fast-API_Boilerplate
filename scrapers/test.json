@@ -1,0 +1,38 @@
+[
+    {
+        "title": "Wijde broek - samsoe",
+        "brand_title": "Samsøe Samsøe",
+        "url": "https://example.com/item1",
+        "photo": {"url": "https://example.com/photo1.jpg"},
+        "status": "New",
+        "size_title": "XS / 34 / 6",
+        "favourite_count": 3
+    },
+    {
+        "title": "Beige Zara trenchcoat",
+        "brand_title": "Zara",
+        "url": "https://example.com/item2",
+        "photo": {"url": "https://example.com/photo2.jpg"},
+        "status": "Very good",
+        "size_title": "M / 38 / 10",
+        "favourite_count": 5
+    },
+    {
+        "title": "Beige Zara trenchcoat",
+        "brand_title": "Nike",
+        "url": "https://example.com/item2",
+        "photo": {"url": "https://example.com/photo2.jpg"},
+        "status": "Very good",
+        "size_title": "M / 38 / 10",
+        "favourite_count": 5
+    },
+    {
+        "title": "Beige Zara trenchcoat",
+        "brand_title": "Levi's",
+        "url": "https://example.com/item2",
+        "photo": {"url": "https://example.com/photo2.jpg"},
+        "status": "Very good",
+        "size_title": "M / 38 / 10",
+        "favourite_count": 5
+    }
+]

@@ -1,0 +1,115 @@
+version: "3.9"
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpChallenge.entryPoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=robinrettien@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - target: 80
+        published: 80
+        mode: host
+      - target: 443
+        published: 443
+        mode: host
+      - target: 8080
+        published: 8080
+        mode: host
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Allow Traefik to see other containers
+      - "letsencrypt:/letsencrypt"  # SSL certificate storage
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - internal_network
+
+  frontend:
+    image: robinrtn/frontend:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend.rule=Host(`picks-sous.xyz`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.role == worker
+      update_config:
+        parallelism: 2
+        delay: 10s
+    ports:
+      - target: 3000
+        published: 3000
+        mode: host
+    networks:
+      - internal_network
+
+  backend:
+    image: robinrtn/backend:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+      - "traefik.http.routers.backend.rule=Host(`picks-sous.xyz`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+    environment:
+      FLASK_ENV: "production"
+      JWT_SECRET_KEY: "your_secret_key"
+      SQLALCHEMY_DATABASE_URI: "postgresql://Vinted-Scraper-DB_owner:7lmZUxpw4kXJ@ep-silent-recipe-a9x7mnwn.gwc.azure.neon.tech:5432/Vinted-Scraper-DB?sslmode=require"
+    command: ["/bin/sh", "-c", "flask db upgrade && python app.py"]
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+      update_config:
+        parallelism: 2
+        delay: 10s
+    ports:
+      - target: 5000
+        published: 5000
+        mode: host
+    networks:
+      - internal_network
+    volumes:
+      - backend_migrations:/app/migrations
+      - backend_seeds:/app/seeds
+
+  scraper:
+    image: robinrtn/scraper:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - internal_network
+    depends_on:
+      - backend
+
+networks:
+  internal_network:
+    driver: overlay  # Swarm requires overlay networks
+
+volumes:
+  letsencrypt:  # Added SSL volume for Let's Encrypt
+  backend_migrations:
+  backend_seeds:

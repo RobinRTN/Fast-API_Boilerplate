@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - type: bind
+        source: /root/Vinted-Scraper/nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+      - type: bind
+        source: /root/Vinted-Scraper/nginx/default.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      restart_policy:
+        condition: any
+    networks:
+      - internal_network
+    depends_on:
+      - backend
+      - frontend
+
+  backend:
+    image: robinrtn/backend:latest
+    environment:
+      FLASK_ENV: "production"
+      JWT_SECRET_KEY: "your_secret_key"
+      MONGO_URI: "mongodb+srv://robinrettien:uZyJE7EfSKlWnVnd@vintedscraper.eqode.mongodb.net/vinted_scraper_db?ssl=true&tlsAllowInvalidCertificates=true"
+      SQLALCHEMY_DATABASE_URI: "postgresql://Vinted-Scraper-DB_owner:7lmZUxpw4kXJ@ep-silent-recipe-a9x7mnwn.gwc.azure.neon.tech:5432/Vinted-Scraper-DB?sslmode=require"
+      GOOGLE_SECRET: "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"
+      GOOGLE_CLIENT: "1007725109700-h9go6r2e7bosait1f8u01sru5kqt7rdn.apps.googleusercontent.com"
+    # command: ["/bin/sh", "-c", "flask db upgrade && python app.py"]
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    networks:
+      - internal_network
+    volumes:
+      - type: volume
+        source: backend_migrations
+        target: /app/migrations
+      - type: volume
+        source: backend_seeds
+        target: /app/seeds
+
+  frontend:
+    image: robinrtn/frontend:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+    networks:
+      - internal_network
+
+  scraper:
+    image: robinrtn/scraper:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    networks:
+      - internal_network
+    depends_on:
+      - backend
+
+networks:
+  internal_network:
+    driver: overlay
+
+volumes:
+  backend_migrations:
+  backend_seeds:
